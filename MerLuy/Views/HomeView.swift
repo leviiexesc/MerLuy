@@ -3,11 +3,19 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject private var currencyAPI: CurrencyAPIService
     @EnvironmentObject private var language: LanguageManager
+    @EnvironmentObject private var notifications: NotificationService
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
                 HomeHeader()
+                if let statusMessage = notifications.statusMessage {
+                    Label(statusMessage, systemImage: "bell.badge.fill")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(MerLuyTheme.positive)
+                        .padding(.horizontal, 4)
+                        .transition(.opacity)
+                }
                 VStack(alignment: .leading, spacing: 6) {
                     Text(language.language.text("Welcome to MerLuy"))
                         .font(.system(size: 25, weight: .bold, design: .rounded))
@@ -37,6 +45,8 @@ struct HomeView: View {
 }
 
 private struct HomeHeader: View {
+    @EnvironmentObject private var notifications: NotificationService
+
     var body: some View {
         HStack {
             HStack(spacing: 8) {
@@ -51,13 +61,18 @@ private struct HomeHeader: View {
                     .font(.system(size: 16, weight: .bold, design: .rounded))
             }
             Spacer()
-            Image(systemName: "bell")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(.white)
-                .frame(width: 32, height: 32)
-                .background(Color.white.opacity(0.06))
-                .clipShape(Circle())
-                .overlay(Circle().stroke(Color.white.opacity(0.12)))
+            Button {
+                Task { await notifications.sendLocalNotification(title: "MerLuy", message: "Your exchange rates are up to date.") }
+            } label: {
+                Image(systemName: "bell.fill")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(.white)
+                    .frame(width: 48, height: 48)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.white.opacity(0.12)))
+            }
+            .buttonStyle(.plain)
         }
     }
 }

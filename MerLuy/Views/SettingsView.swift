@@ -3,7 +3,8 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: LanguageManager
-    @AppStorage("merluy.adminMode") private var adminMode = false
+    @AppStorage("merluy.adminAuthenticated") private var adminAuthenticated = false
+    @State private var showingAdminAccess = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -33,9 +34,10 @@ struct SettingsView: View {
                             }
                         }
                     }
-                    SettingsRow(icon: "person.badge.key", title: language.language.text("Admin Access")) {
-                        Toggle("", isOn: $adminMode).labelsHidden().tint(MerLuyTheme.indigo)
+                    Button { showingAdminAccess = true } label: {
+                        SettingsRow(icon: "person.badge.key", title: language.language.text("Admin Account"), detail: adminAuthenticated ? "Signed in" : "Login / Register", showsChevron: true)
                     }
+                    .buttonStyle(.plain)
                 }
                 SettingsSection(title: language.language.text("About")) {
                     SettingsRow(icon: "star", title: language.language.text("Rate MerLuy"), showsChevron: true)
@@ -45,6 +47,9 @@ struct SettingsView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 14)
+        }
+        .sheet(isPresented: $showingAdminAccess) {
+            AdminAccessView(isAuthenticated: $adminAuthenticated)
         }
     }
 }

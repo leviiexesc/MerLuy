@@ -22,3 +22,5 @@ Supported currencies include USD, EUR, GBP, JPY, and KHR (Cambodian Riel). Engli
 The repository includes `MerLuy.xcodeproj` and a GitHub Actions workflow at `.github/workflows/build-ios.yml`. Open the **Actions** tab on GitHub and run **Build iOS IPA**. The workflow uploads `MerLuy-unsigned.ipa` as an artifact.
 
 This is an unsigned IPA for free CI builds. Installing on a physical iPhone requires Apple Developer signing, provisioning, and certificates configured as GitHub Actions secrets.
+
+Admin tools are demo-only local features: create an Admin account from Settings, then use the Admin tab for sample dashboard metrics, local notifications, and a no-payment Pro Beta plan preview. Production accounts, remote notifications, and real analytics require a secure backend.

@@ -69,6 +69,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case "Message": return "សារ"
         case "Send Notification": return "ផ្ញើការជូនដំណឹង"
         case "Admin Access": return "សិទ្ធិអ្នកគ្រប់គ្រង"
+        case "Admin Account": return "គណនីអ្នកគ្រប់គ្រង"
         default: return english
         }
     }

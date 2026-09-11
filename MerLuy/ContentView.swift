@@ -3,7 +3,7 @@ import SwiftUI
 struct ContentView: View {
     enum Tab: Int { case home, exchange, settings, admin }
     @State private var selectedTab: Tab = .home
-    @AppStorage("merluy.adminMode") private var adminMode = false
+    @AppStorage("merluy.adminAuthenticated") private var adminAuthenticated = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -18,16 +18,19 @@ struct ContentView: View {
             }
             .padding(.bottom, 74)
 
-            CustomTabBar(selectedTab: $selectedTab, adminMode: adminMode)
+            CustomTabBar(selectedTab: $selectedTab, adminAuthenticated: adminAuthenticated)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 10)
+        }
+        .onChange(of: adminAuthenticated) { isAuthenticated in
+            if !isAuthenticated, selectedTab == .admin { selectedTab = .home }
         }
     }
 }
 
 struct CustomTabBar: View {
     @Binding var selectedTab: ContentView.Tab
-    let adminMode: Bool
+    let adminAuthenticated: Bool
 
     private var tabs: [(ContentView.Tab, String, String)] {
         var items: [(ContentView.Tab, String, String)] = [
@@ -35,7 +38,7 @@ struct CustomTabBar: View {
             (.exchange, "Exchange", "arrow.triangle.2.circlepath"),
             (.settings, "Settings", "gearshape.fill")
         ]
-        if adminMode { items.append((.admin, "Admin", "bell.badge.fill")) }
+        if adminAuthenticated { items.append((.admin, "Admin", "chart.bar.xaxis")) }
         return items
     }
 
