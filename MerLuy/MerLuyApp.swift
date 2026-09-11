@@ -7,6 +7,7 @@ struct MerLuyApp: App {
     @StateObject private var language = LanguageManager()
     @StateObject private var notifications = NotificationService()
     @StateObject private var profile = UserProfile()
+    @StateObject private var usage = AppUsageStore()
 
     var body: some Scene {
         WindowGroup {
@@ -16,6 +17,7 @@ struct MerLuyApp: App {
                 .environmentObject(language)
                 .environmentObject(notifications)
                 .environmentObject(profile)
+                .environmentObject(usage)
                 .preferredColorScheme(theme.isDarkMode ? .dark : .light)
         }
     }

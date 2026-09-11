@@ -10,7 +10,10 @@ struct AdminView: View {
     @EnvironmentObject private var notifications: NotificationService
     @EnvironmentObject private var language: LanguageManager
     @EnvironmentObject private var profile: UserProfile
-    @AppStorage("merluy.adminAuthenticated") private var adminAuthenticated = true
+    @EnvironmentObject private var usage: AppUsageStore
+    @EnvironmentObject private var currencyAPI: CurrencyAPIService
+    @AppStorage("merluy.admin.name") private var adminName = "MerLuy Admin"
+    @AppStorage("merluy.admin.email") private var adminEmail = "admin@merluy.local"
     @State private var section: Section = .dashboard
     @State private var title = "MerLuy update"
     @State private var message = "Your exchange rates have been refreshed."
@@ -34,17 +37,9 @@ struct AdminView: View {
                 case .notifications: notificationComposer
                 case .plans: betaPlans
                 }
-                Button {
-                    adminAuthenticated = false
-                } label: {
-                    Label("Log Out Admin", systemImage: "rectangle.portrait.and.arrow.right")
-                        .font(.system(size: 13, weight: .semibold))
-                        .frame(maxWidth: .infinity)
-                        .frame(minHeight: 46)
-                }
-                .foregroundStyle(MerLuyTheme.negative)
-                .background(MerLuyTheme.negative.opacity(0.10))
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                Text("Admin: \(adminName) · \(adminEmail)")
+                    .font(.system(size: 11))
+                    .foregroundStyle(MerLuyTheme.textSecondary)
             }
             .padding(.horizontal, 16)
             .padding(.top, 14)
@@ -65,22 +60,22 @@ struct AdminView: View {
     private var dashboard: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 12) {
-                MetricCard(title: "Active users", value: "128", icon: "person.2.fill", color: .cyan)
-                MetricCard(title: "Conversions", value: "642", icon: "arrow.left.arrow.right", color: MerLuyTheme.indigo)
+                MetricCard(title: "App opens", value: "\(usage.homeOpens)", icon: "person.2.fill", color: .cyan)
+                MetricCard(title: "Conversions", value: "\(usage.conversions)", icon: "arrow.left.arrow.right", color: MerLuyTheme.indigo)
             }
             HStack(spacing: 12) {
-                MetricCard(title: "KHR volume", value: "៛8.4M", icon: "banknote.fill", color: MerLuyTheme.positive)
-                MetricCard(title: "API status", value: "Live", icon: "antenna.radiowaves.left.and.right", color: MerLuyTheme.positive)
+                MetricCard(title: "Exchange opens", value: "\(usage.exchangeOpens)", icon: "chart.line.uptrend.xyaxis", color: MerLuyTheme.positive)
+                MetricCard(title: "Rates API", value: currencyAPI.rates.isEmpty ? "Offline" : "Live", icon: "antenna.radiowaves.left.and.right", color: currencyAPI.rates.isEmpty ? MerLuyTheme.negative : MerLuyTheme.positive)
             }
             VStack(alignment: .leading, spacing: 12) {
                 Text("Usage overview").font(.system(size: 16, weight: .bold))
-                UsageRow(label: "Home opens", value: "1,284", progress: 0.78)
-                UsageRow(label: "Exchange sessions", value: "642", progress: 0.54)
-                UsageRow(label: "Khmer language", value: "36%", progress: 0.36)
+                UsageRow(label: "Home opens", value: "\(usage.homeOpens)", progress: min(Double(usage.homeOpens) / 100.0, 1.0))
+                UsageRow(label: "Exchange sessions", value: "\(usage.exchangeOpens)", progress: min(Double(usage.exchangeOpens) / 100.0, 1.0))
+                UsageRow(label: "Plan", value: profile.isPro ? "Pro Beta" : "Free", progress: profile.isPro ? 1.0 : 0.25)
             }
             .padding(16)
             .glassCard(radius: 18)
-            Text("Demo analytics are local sample data. Connect a backend to show real users and usage.")
+            Text("Dashboard data is collected locally on this device. Add a backend later for multi-user analytics.")
                 .font(.system(size: 11))
                 .foregroundStyle(MerLuyTheme.textSecondary)
         }

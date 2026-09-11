@@ -3,7 +3,8 @@ import SwiftUI
 struct ContentView: View {
     enum Tab: Int { case home, exchange, profile, settings, admin }
     @State private var selectedTab: Tab = .home
-    @AppStorage("merluy.adminAuthenticated") private var adminAuthenticated = false
+    private let adminAuthenticated = true
+    @EnvironmentObject private var profile: UserProfile
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -19,12 +20,9 @@ struct ContentView: View {
             }
             .padding(.bottom, 74)
 
-            CustomTabBar(selectedTab: $selectedTab, adminAuthenticated: adminAuthenticated)
+            CustomTabBar(selectedTab: $selectedTab, adminAuthenticated: adminAuthenticated, isLoggedIn: profile.isLoggedIn)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 10)
-        }
-        .onChange(of: adminAuthenticated) { isAuthenticated in
-            if !isAuthenticated, selectedTab == .admin { selectedTab = .home }
         }
     }
 }
@@ -32,12 +30,13 @@ struct ContentView: View {
 struct CustomTabBar: View {
     @Binding var selectedTab: ContentView.Tab
     let adminAuthenticated: Bool
+    let isLoggedIn: Bool
 
     private var tabs: [(ContentView.Tab, String, String)] {
         var items: [(ContentView.Tab, String, String)] = [
             (.home, "Home", "house.fill"),
             (.exchange, "Exchange", "arrow.triangle.2.circlepath"),
-            (.profile, "Profile", "person.crop.circle.fill"),
+            (.profile, isLoggedIn ? "Profile" : "Account", "person.crop.circle.fill"),
             (.settings, "Settings", "gearshape.fill")
         ]
         if adminAuthenticated { items.append((.admin, "Admin", "chart.bar.xaxis")) }

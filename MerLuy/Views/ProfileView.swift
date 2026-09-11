@@ -6,8 +6,6 @@ struct ProfileView: View {
     @EnvironmentObject private var profile: UserProfile
     @EnvironmentObject private var language: LanguageManager
     @State private var showingAuth = false
-    @State private var showingAdminAuth = false
-    @AppStorage("merluy.adminAuthenticated") private var adminAuthenticated = false
     @State private var selectedPhoto: PhotosPickerItem?
 
     var body: some View {
@@ -18,13 +16,6 @@ struct ProfileView: View {
                     profileCard
                     verificationCard
                     planCard
-                    Button { showingAdminAuth = true } label: {
-                        Label("Admin Login", systemImage: "person.badge.key")
-                            .frame(maxWidth: .infinity).frame(minHeight: 46)
-                    }
-                    .foregroundStyle(MerLuyTheme.textSecondary)
-                    .background(Color.white.opacity(0.07))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
                     Button {
                         profile.logOut()
                     } label: {
@@ -44,9 +35,6 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showingAuth) {
             ProfileAuthView()
-        }
-        .sheet(isPresented: $showingAdminAuth) {
-            AdminAccessView(isAuthenticated: $adminAuthenticated)
         }
         .onChange(of: selectedPhoto) { item in
             Task {
@@ -134,10 +122,6 @@ struct ProfileView: View {
                 .font(.system(size: 14, weight: .bold)).foregroundStyle(.white)
                 .frame(maxWidth: .infinity).frame(minHeight: 50)
                 .background(MerLuyTheme.indigo).clipShape(RoundedRectangle(cornerRadius: 15))
-            Button("Admin Login") { showingAdminAuth = true }
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(MerLuyTheme.textSecondary)
-                .frame(minHeight: 44)
         }
         .padding(20).glassCard(radius: 20)
     }

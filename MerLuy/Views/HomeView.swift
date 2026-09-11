@@ -4,6 +4,7 @@ struct HomeView: View {
     @EnvironmentObject private var currencyAPI: CurrencyAPIService
     @EnvironmentObject private var language: LanguageManager
     @EnvironmentObject private var notifications: NotificationService
+    @EnvironmentObject private var usage: AppUsageStore
     @State private var showingNotifications = false
 
     var body: some View {
@@ -43,6 +44,7 @@ struct HomeView: View {
             NotificationCenterView()
         }
         .task {
+            usage.recordHomeOpen()
             await currencyAPI.fetchRates()
         }
     }

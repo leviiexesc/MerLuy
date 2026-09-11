@@ -3,6 +3,7 @@ import SwiftUI
 struct ExchangeView: View {
     @EnvironmentObject private var currencyAPI: CurrencyAPIService
     @EnvironmentObject private var language: LanguageManager
+    @EnvironmentObject private var usage: AppUsageStore
     @State private var amount = "100"
     @State private var from = SampleData.usd
     @State private var to = SampleData.eur
@@ -52,7 +53,7 @@ struct ExchangeView: View {
                     CurrencySelector(title: language.language.text("To"), currency: $to)
                 }
 
-                Button(language.language.text("Convert Amount")) { }
+                Button(language.language.text("Convert Amount")) { usage.recordConversion() }
                     .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -68,6 +69,7 @@ struct ExchangeView: View {
             .padding(.top, 14)
         }
         .task {
+            usage.recordExchangeOpen()
             await currencyAPI.fetchRates()
         }
     }
