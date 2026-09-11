@@ -1,0 +1,11 @@
+# Xcode
+.DS_Store
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# Generated archives
+*.xcarchive
+*.ipa
+*.dSYM.zip

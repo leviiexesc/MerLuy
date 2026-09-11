@@ -16,3 +16,9 @@ The app uses only SwiftUI and Foundation. No external packages are required.
 MerLuy uses the free, keyless Frankfurter exchange-rate API through native `URLSession`. No paid account or API key is required. If the request is unavailable, the built-in sample rates keep the app usable.
 
 Supported currencies include USD, EUR, GBP, JPY, and KHR (Cambodian Riel). English and Khmer language options are available in Settings.
+
+## GitHub iOS Build
+
+The repository includes `MerLuy.xcodeproj` and a GitHub Actions workflow at `.github/workflows/build-ios.yml`. Open the **Actions** tab on GitHub and run **Build iOS IPA**. The workflow uploads `MerLuy-unsigned.ipa` as an artifact.
+
+This is an unsigned IPA for free CI builds. Installing on a physical iPhone requires Apple Developer signing, provisioning, and certificates configured as GitHub Actions secrets.
