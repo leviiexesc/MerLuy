@@ -46,7 +46,7 @@
 		D10000000000000000000003 /* Models */ = {isa = PBXGroup; children = (B10000000000000000000003, ); path = Models; sourceTree = "<group>"; };
 		D10000000000000000000004 /* Services */ = {isa = PBXGroup; children = (B10000000000000000000004, B10000000000000000000011, ); path = Services; sourceTree = "<group>"; };
 		D10000000000000000000005 /* Theme */ = {isa = PBXGroup; children = (B10000000000000000000005, ); path = Theme; sourceTree = "<group>"; };
-		D10000000000000000000006 /* Views */ = {isa = PBXGroup; children = (B10000000000000000000006, B10000000000000000000007, B10000000000000000000008, ); path = Views; sourceTree = "<group>"; };
+		D10000000000000000000006 /* Views */ = {isa = PBXGroup; children = (B10000000000000000000006, B10000000000000000000007, B10000000000000000000008, B10000000000000000000009, ); path = Views; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
