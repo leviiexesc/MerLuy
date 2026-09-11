@@ -124,7 +124,7 @@ private struct ResultCard: View {
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(MerLuyTheme.positive)
             }
-            Text("€" + result.formatted(.number.precision(.fractionLength(2))))
+            Text("\(currencySymbol(for: to))" + result.formatted(.number.precision(.fractionLength(2))))
                 .font(.system(size: 22, weight: .bold, design: .monospaced))
             Text("\(from.code) to \(to.code) - Updated 1m ago")
                 .font(.system(size: 10))
@@ -133,5 +133,16 @@ private struct ResultCard: View {
         .padding(16)
         .background(LinearGradient(colors: [Color.green.opacity(0.08), MerLuyTheme.indigo.opacity(0.12)], startPoint: .topLeading, endPoint: .bottomTrailing))
         .glassCard(radius: 18)
+    }
+
+    private func currencySymbol(for currency: Currency) -> String {
+        switch currency.code {
+        case "USD": return "$"
+        case "EUR": return "€"
+        case "GBP": return "£"
+        case "JPY": return "¥"
+        case "KHR": return "៛"
+        default: return ""
+        }
     }
 }

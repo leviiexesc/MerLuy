@@ -40,12 +40,13 @@ private struct HomeHeader: View {
     var body: some View {
         HStack {
             HStack(spacing: 8) {
-                Image(systemName: "arrow.triangle.2.circlepath")
-                    .font(.system(size: 17, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 28, height: 28)
-                    .background(MerLuyTheme.indigo)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                ZStack {
+                    Circle().fill(LinearGradient(colors: [Color.cyan, MerLuyTheme.indigo], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                .frame(width: 30, height: 30)
                 Text("MerLuy")
                     .font(.system(size: 16, weight: .bold, design: .rounded))
             }
