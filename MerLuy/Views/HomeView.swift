@@ -2,22 +2,23 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject private var currencyAPI: CurrencyAPIService
+    @EnvironmentObject private var language: LanguageManager
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
                 HomeHeader()
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Welcome to MerLuy")
+                    Text(language.language.text("Welcome to MerLuy"))
                         .font(.system(size: 25, weight: .bold, design: .rounded))
-                    Text("Real-time liquid-grade global transactions")
+                    Text(language.language.text("Real-time liquid-grade global transactions"))
                         .font(.system(size: 13))
                         .foregroundStyle(MerLuyTheme.textSecondary)
                 }
                 .padding(.top, 3)
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Live Markets")
+                    Text(language.language.text("Live Markets"))
                         .font(.system(size: 15, weight: .bold))
                     ForEach(SampleData.rates) { rate in
                         MarketCard(rate: rate, liveRate: currencyAPI.rate(from: rate.from, to: rate.to))
@@ -95,13 +96,15 @@ private struct MarketCard: View {
 }
 
 private struct QuickConvertCard: View {
+    @EnvironmentObject private var language: LanguageManager
+
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("Quick Convert")
+            Text(language.language.text("Quick Convert"))
                 .font(.system(size: 15, weight: .bold))
             HStack {
                 VStack(alignment: .leading, spacing: 7) {
-                    Text("You send").font(.system(size: 10)).foregroundStyle(MerLuyTheme.textSecondary)
+                    Text(language.language.text("You send")).font(.system(size: 10)).foregroundStyle(MerLuyTheme.textSecondary)
                     Text("1,000").font(.system(size: 19, weight: .bold, design: .monospaced))
                 }
                 Spacer()
@@ -110,7 +113,7 @@ private struct QuickConvertCard: View {
             Divider().overlay(MerLuyTheme.divider)
             HStack {
                 VStack(alignment: .leading, spacing: 7) {
-                    Text("You receive").font(.system(size: 10)).foregroundStyle(MerLuyTheme.textSecondary)
+                    Text(language.language.text("You receive")).font(.system(size: 10)).foregroundStyle(MerLuyTheme.textSecondary)
                     Text("924.10").font(.system(size: 19, weight: .bold, design: .monospaced)).foregroundStyle(MerLuyTheme.indigo)
                 }
                 Spacer()

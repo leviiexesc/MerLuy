@@ -32,6 +32,7 @@ final class CurrencyAPIService: ObservableObject {
             }
             let payload = try JSONDecoder().decode(CurrencyRatesResponse.self, from: data)
             rates = payload.rates
+            if rates["KHR"] == nil { rates["KHR"] = 4100.0 }
             updatedAt = ISO8601DateFormatter().date(from: payload.date)
         } catch {
             errorMessage = error.localizedDescription
@@ -39,9 +40,11 @@ final class CurrencyAPIService: ObservableObject {
     }
 
     func rate(from: Currency, to: Currency) -> Double? {
-        guard let destinationRate = rates[to.code] else { return nil }
+        let destinationRate = rates[to.code] ?? (to.code == "KHR" ? 4100.0 : nil)
+        guard let destinationRate else { return nil }
         guard from.code != "USD" else { return destinationRate }
-        guard let sourceRate = rates[from.code], sourceRate != 0 else { return nil }
+        let sourceRate = rates[from.code] ?? (from.code == "KHR" ? 4100.0 : nil)
+        guard let sourceRate, sourceRate != 0 else { return nil }
         return destinationRate / sourceRate
     }
 

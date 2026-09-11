@@ -2,29 +2,41 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var theme: ThemeManager
+    @EnvironmentObject private var language: LanguageManager
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Settings").font(.system(size: 25, weight: .bold, design: .rounded))
-                    Text("Manage your preferences and profiles").font(.system(size: 13)).foregroundStyle(MerLuyTheme.textSecondary)
+                    Text(language.language.text("Settings")).font(.system(size: 25, weight: .bold, design: .rounded))
+                    Text(language.language.text("Manage your preferences and profiles")).font(.system(size: 13)).foregroundStyle(MerLuyTheme.textSecondary)
                 }
-                SettingsSection(title: "Account") {
-                    SettingsRow(icon: "person", title: "Profile Details", showsChevron: true)
-                    SettingsRow(icon: "bell", title: "Notifications", showsChevron: true)
+                SettingsSection(title: language.language.text("Account")) {
+                    SettingsRow(icon: "person", title: language.language.text("Profile Details"), showsChevron: true)
+                    SettingsRow(icon: "bell", title: language.language.text("Notifications"), showsChevron: true)
                 }
-                SettingsSection(title: "Preferences") {
-                    SettingsRow(icon: "creditcard", title: "Default Currency", detail: "USD ($)", showsChevron: true)
-                    SettingsRow(icon: "moon", title: "Dark Theme") {
+                SettingsSection(title: language.language.text("Preferences")) {
+                    SettingsRow(icon: "creditcard", title: language.language.text("Default Currency"), detail: "USD ($)", showsChevron: true)
+                    SettingsRow(icon: "moon", title: language.language.text("Dark Theme")) {
                         Toggle("", isOn: $theme.isDarkMode).labelsHidden().tint(MerLuyTheme.indigo)
                     }
-                    SettingsRow(icon: "globe", title: "Language", detail: "English", showsChevron: true)
+                    SettingsRow(icon: "globe", title: language.language.text("Language")) {
+                        Menu {
+                            ForEach(AppLanguage.allCases) { option in
+                                Button(option.rawValue) { language.language = option }
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text(language.language.rawValue).font(.system(size: 11)).foregroundStyle(MerLuyTheme.textSecondary)
+                                Image(systemName: "chevron.right").font(.system(size: 9, weight: .bold)).foregroundStyle(MerLuyTheme.textSecondary)
+                            }
+                        }
+                    }
                 }
-                SettingsSection(title: "About") {
-                    SettingsRow(icon: "star", title: "Rate MerLuy", showsChevron: true)
-                    SettingsRow(icon: "lock", title: "Privacy Policy", showsChevron: true)
-                    SettingsRow(icon: "info.circle", title: "Version", detail: "v26.4.2")
+                SettingsSection(title: language.language.text("About")) {
+                    SettingsRow(icon: "star", title: language.language.text("Rate MerLuy"), showsChevron: true)
+                    SettingsRow(icon: "lock", title: language.language.text("Privacy Policy"), showsChevron: true)
+                    SettingsRow(icon: "info.circle", title: language.language.text("Version"), detail: "v26.4.2")
                 }
             }
             .padding(.horizontal, 16)

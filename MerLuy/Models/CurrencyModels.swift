@@ -22,8 +22,9 @@ enum SampleData {
     static let eur = Currency(id: "eur", code: "EUR", name: "Euro", flag: "🇪🇺")
     static let gbp = Currency(id: "gbp", code: "GBP", name: "British Pound", flag: "🇬🇧")
     static let jpy = Currency(id: "jpy", code: "JPY", name: "Japanese Yen", flag: "🇯🇵")
+    static let khr = Currency(id: "khr", code: "KHR", name: "Cambodian Riel", flag: "🇰🇭")
 
-    static let currencies = [usd, eur, gbp, jpy]
+    static let currencies = [usd, eur, gbp, jpy, khr]
     static let rates = [
         ExchangeRate(from: usd, to: eur, rate: 0.9241, change: 0.18),
         ExchangeRate(from: gbp, to: jpy, rate: 191.56, change: -0.45),

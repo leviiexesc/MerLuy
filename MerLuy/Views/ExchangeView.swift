@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ExchangeView: View {
     @EnvironmentObject private var currencyAPI: CurrencyAPIService
+    @EnvironmentObject private var language: LanguageManager
     @State private var amount = "100"
     @State private var from = SampleData.usd
     @State private var to = SampleData.eur
@@ -18,10 +19,10 @@ struct ExchangeView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 18) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Exchange").font(.system(size: 25, weight: .bold, design: .rounded))
-                    Text("Convert between world currencies").font(.system(size: 13)).foregroundStyle(MerLuyTheme.textSecondary)
+                    Text(language.language.text("Exchange")).font(.system(size: 25, weight: .bold, design: .rounded))
+                    Text(language.language.text("Convert between world currencies")).font(.system(size: 13)).foregroundStyle(MerLuyTheme.textSecondary)
                 }
-                Text("Amount").font(.system(size: 11)).foregroundStyle(MerLuyTheme.textSecondary)
+                Text(language.language.text("Amount")).font(.system(size: 11)).foregroundStyle(MerLuyTheme.textSecondary)
                 TextField("0", text: $amount)
                     .keyboardType(.decimalPad)
                     .font(.system(size: 16, weight: .bold, design: .monospaced))
@@ -31,7 +32,7 @@ struct ExchangeView: View {
                     .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.10)))
 
                 VStack(spacing: 2) {
-                    CurrencySelector(title: "From", currency: from)
+                    CurrencySelector(title: language.language.text("From"), currency: $from)
                     HStack {
                         Spacer()
                         Button {
@@ -48,10 +49,10 @@ struct ExchangeView: View {
                         .padding(.vertical, -5)
                         Spacer()
                     }
-                    CurrencySelector(title: "To", currency: to)
+                    CurrencySelector(title: language.language.text("To"), currency: $to)
                 }
 
-                Button("Convert Amount") { }
+                Button(language.language.text("Convert Amount")) { }
                     .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -80,21 +81,31 @@ struct ExchangeView: View {
 
 private struct CurrencySelector: View {
     let title: String
-    let currency: Currency
+    @Binding var currency: Currency
     var body: some View {
-        HStack(spacing: 12) {
-            Text(currency.flag).font(.system(size: 23)).frame(width: 30, height: 30).background(Color.white.opacity(0.12)).clipShape(Circle())
-            VStack(alignment: .leading, spacing: 2) {
-                Text(currency.code).font(.system(size: 13, weight: .bold))
-                Text(currency.name).font(.system(size: 10)).foregroundStyle(MerLuyTheme.textSecondary)
+        Menu {
+            ForEach(SampleData.currencies) { option in
+                Button {
+                    currency = option
+                } label: {
+                    Text("\(option.flag) \(option.code) - \(option.name)")
+                }
             }
-            Spacer()
-            Image(systemName: "chevron.down").font(.system(size: 11, weight: .bold)).foregroundStyle(MerLuyTheme.textSecondary)
-        }
-        .padding(13)
-        .glassCard(radius: 15)
-        .overlay(alignment: .topLeading) {
-            Text(title).font(.system(size: 9)).foregroundStyle(MerLuyTheme.textSecondary).padding(.leading, 13).padding(.top, 9)
+        } label: {
+            HStack(spacing: 12) {
+                Text(currency.flag).font(.system(size: 23)).frame(width: 30, height: 30).background(Color.white.opacity(0.12)).clipShape(Circle())
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(currency.code).font(.system(size: 13, weight: .bold))
+                    Text(currency.name).font(.system(size: 10)).foregroundStyle(MerLuyTheme.textSecondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.down").font(.system(size: 11, weight: .bold)).foregroundStyle(MerLuyTheme.textSecondary)
+            }
+            .padding(13)
+            .glassCard(radius: 15)
+            .overlay(alignment: .topLeading) {
+                Text(title).font(.system(size: 9)).foregroundStyle(MerLuyTheme.textSecondary).padding(.leading, 13).padding(.top, 9)
+            }
         }
     }
 }
