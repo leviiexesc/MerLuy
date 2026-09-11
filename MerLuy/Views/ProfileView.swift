@@ -7,6 +7,8 @@ struct ProfileView: View {
     @EnvironmentObject private var language: LanguageManager
     @State private var showingAuth = false
     @State private var selectedPhoto: PhotosPickerItem?
+    @State private var licenseKey = ""
+    @State private var licenseMessage: String?
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -16,6 +18,7 @@ struct ProfileView: View {
                     profileCard
                     verificationCard
                     planCard
+                    licenseCard
                     Button {
                         profile.logOut()
                     } label: {
@@ -102,14 +105,44 @@ struct ProfileView: View {
                 .foregroundStyle(profile.isPro ? .yellow : MerLuyTheme.indigo)
                 .frame(width: 40, height: 40).background(Color.white.opacity(0.08)).clipShape(RoundedRectangle(cornerRadius: 12))
             VStack(alignment: .leading, spacing: 4) {
-                Text(profile.isPro ? "Pro Beta" : "Free Plan").font(.system(size: 14, weight: .bold))
-                Text(profile.isPro ? "Premium features are active" : "Activate Pro from Admin Beta Plans")
+                Text(profile.isPro ? "Pro Plan" : "Free Plan").font(.system(size: 14, weight: .bold))
+                Text(profile.isPro ? "Premium features are active" : "Contact the owner for a license key")
                     .font(.system(size: 11)).foregroundStyle(MerLuyTheme.textSecondary)
             }
             Spacer()
             Text(profile.isPro ? "ACTIVE" : "FREE").font(.system(size: 10, weight: .bold)).foregroundStyle(profile.isPro ? MerLuyTheme.positive : MerLuyTheme.textSecondary)
         }
         .padding(15).glassCard(radius: 17)
+    }
+
+    private var licenseCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Pro license").font(.system(size: 14, weight: .bold))
+            Text("Enter a license key provided by the owner to activate Pro on this device.")
+                .font(.system(size: 11)).foregroundStyle(MerLuyTheme.textSecondary)
+            TextField("License key", text: $licenseKey)
+                .textInputAutocapitalization(.characters)
+                .autocorrectionDisabled()
+                .font(.system(size: 13, weight: .medium, design: .monospaced))
+                .padding(.horizontal, 13)
+                .frame(minHeight: 48)
+                .background(Color.white.opacity(0.08))
+                .clipShape(RoundedRectangle(cornerRadius: 13))
+            Button("Activate Pro") { activatePro() }
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: 48)
+                .background(MerLuyTheme.indigo)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            if let licenseMessage {
+                Text(licenseMessage)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(profile.isPro ? MerLuyTheme.positive : MerLuyTheme.negative)
+            }
+        }
+        .padding(15)
+        .glassCard(radius: 17)
     }
 
     private var loggedOutCard: some View {
@@ -160,12 +193,32 @@ private struct ProfileAuthView: View {
                 SecureField("Password", text: $password).authStyle()
                 if let error { Text(error).font(.system(size: 12)).foregroundStyle(MerLuyTheme.negative) }
                 Button("Continue") {
-                    guard !name.isEmpty, email.contains("@"), password.count >= 6 else { error = "Enter your name, valid email, and 6+ character password."; return }
-                    profile.register(name: name, email: email); dismiss()
+                    guard email.contains("@"), password.count >= 6 else { error = "Enter a valid email and 6+ character password."; return }
+                    if email.caseInsensitiveCompare("admin@gmail.com") == .orderedSame {
+                        guard profile.login(name: name, email: email, password: password) else { error = "Admin credentials are not valid."; return }
+                    } else {
+                        guard !name.isEmpty else { error = "Enter your name to create a User account."; return }
+                        profile.register(name: name, email: email)
+                    }
+                    dismiss()
                 }.font(.system(size: 15, weight: .bold)).foregroundStyle(.white).frame(maxWidth: .infinity).frame(minHeight: 50).background(MerLuyTheme.indigo).clipShape(RoundedRectangle(cornerRadius: 15))
             }.padding(20).glassCard(radius: 22).padding(18) }
             .toolbar { ToolbarItem(placement: .topBarLeading) { Button("Close") { dismiss() } } }
         }.preferredColorScheme(.dark)
+    }
+}
+
+private extension ProfileView {
+    func activatePro() {
+        let normalizedKey = licenseKey.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        let testKeys = (1...10).map { String(format: "MERLUY-PRO-%03d", $0) } + ["MERLUY-PRO-BETA"]
+        guard testKeys.contains(normalizedKey) else {
+            licenseMessage = "Contact the owner for a valid license key."
+            return
+        }
+        UserDefaults.standard.set(true, forKey: "merluy.proActivated")
+        profile.isPro = true
+        licenseMessage = "Pro activated on this device."
     }
 }
 

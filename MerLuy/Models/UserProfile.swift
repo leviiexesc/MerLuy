@@ -2,6 +2,10 @@ import Foundation
 
 @MainActor
 final class UserProfile: ObservableObject {
+    enum Role: String {
+        case user = "User"
+        case admin = "Admin"
+    }
     @Published var isLoggedIn: Bool {
         didSet { UserDefaults.standard.set(isLoggedIn, forKey: "merluy.user.loggedIn") }
     }
@@ -20,6 +24,11 @@ final class UserProfile: ObservableObject {
     @Published var imageData: Data? {
         didSet { UserDefaults.standard.set(imageData, forKey: "merluy.user.image") }
     }
+    @Published private(set) var role: Role {
+        didSet { UserDefaults.standard.set(role.rawValue, forKey: "merluy.user.role") }
+    }
+
+    var isAdmin: Bool { isLoggedIn && role == .admin }
 
     init() {
         let defaults = UserDefaults.standard
@@ -29,6 +38,7 @@ final class UserProfile: ObservableObject {
         isVerified = defaults.bool(forKey: "merluy.user.verified")
         isPro = defaults.bool(forKey: "merluy.user.pro") || defaults.bool(forKey: "merluy.proActivated")
         imageData = defaults.data(forKey: "merluy.user.image")
+        role = Role(rawValue: defaults.string(forKey: "merluy.user.role") ?? "User") ?? .user
     }
 
     func register(name: String, email: String) {
@@ -36,10 +46,23 @@ final class UserProfile: ObservableObject {
         self.email = email
         isLoggedIn = true
         isVerified = false
+        role = .user
+    }
+
+    func login(name: String, email: String, password: String) -> Bool {
+        guard email.caseInsensitiveCompare("admin@gmail.com") == .orderedSame,
+              password == "admin998877$" else { return false }
+        self.name = name.isEmpty ? "Admin" : name
+        self.email = email
+        self.role = .admin
+        self.isVerified = true
+        self.isLoggedIn = true
+        return true
     }
 
     func logOut() {
         isLoggedIn = false
+        role = .user
     }
 
     func verify() {

@@ -3,7 +3,6 @@ import SwiftUI
 struct ContentView: View {
     enum Tab: Int { case home, exchange, profile, settings, admin }
     @State private var selectedTab: Tab = .home
-    private let adminAuthenticated = true
     @EnvironmentObject private var profile: UserProfile
 
     var body: some View {
@@ -20,9 +19,12 @@ struct ContentView: View {
             }
             .padding(.bottom, 94)
 
-            CustomTabBar(selectedTab: $selectedTab, adminAuthenticated: adminAuthenticated, isLoggedIn: profile.isLoggedIn)
+            CustomTabBar(selectedTab: $selectedTab, adminAuthenticated: profile.isAdmin, isLoggedIn: profile.isLoggedIn)
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)
+        }
+        .onChange(of: profile.isAdmin) { isAdmin in
+            if !isAdmin, selectedTab == .admin { selectedTab = .profile }
         }
     }
 }

@@ -4,7 +4,6 @@ struct AdminView: View {
     private enum Section: String, CaseIterable {
         case dashboard = "Dashboard"
         case notifications = "Notifications"
-        case plans = "Beta Plans"
     }
 
     @EnvironmentObject private var notifications: NotificationService
@@ -12,15 +11,9 @@ struct AdminView: View {
     @EnvironmentObject private var profile: UserProfile
     @EnvironmentObject private var usage: AppUsageStore
     @EnvironmentObject private var currencyAPI: CurrencyAPIService
-    @AppStorage("merluy.admin.name") private var adminName = "MerLuy Admin"
-    @AppStorage("merluy.admin.email") private var adminEmail = "admin@merluy.local"
     @State private var section: Section = .dashboard
     @State private var title = "MerLuy update"
     @State private var message = "Your exchange rates have been refreshed."
-    @State private var selectedPlan = "Pro Beta"
-    @AppStorage("merluy.proActivated") private var didActivatePlan = false
-    @State private var licenseKey = ""
-    @State private var licenseMessage: String?
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -35,10 +28,9 @@ struct AdminView: View {
                 switch section {
                 case .dashboard: dashboard
                 case .notifications: notificationComposer
-                case .plans: betaPlans
                 }
-                Text("Admin: \(adminName) · \(adminEmail)")
-                    .font(.system(size: 11))
+                Text("Private Admin Workspace")
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(MerLuyTheme.textSecondary)
             }
             .padding(.horizontal, 16)
@@ -110,68 +102,6 @@ struct AdminView: View {
         .glassCard(radius: 20)
     }
 
-    private var betaPlans: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Test account plans before launch")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(MerLuyTheme.textSecondary)
-            PlanCard(name: "Free", detail: "Basic currency conversion", icon: "person", isSelected: selectedPlan == "Free") {
-                selectedPlan = "Free"
-            }
-            PlanCard(name: "Pro Beta", detail: "Unlimited conversions and priority rates", icon: "sparkles", isSelected: selectedPlan == "Pro Beta") {
-                selectedPlan = "Pro Beta"
-            }
-            if selectedPlan == "Pro Beta" {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Pro license key")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(MerLuyTheme.textSecondary)
-                    TextField("Enter license key", text: $licenseKey)
-                        .textInputAutocapitalization(.characters)
-                        .autocorrectionDisabled()
-                        .font(.system(size: 14, weight: .medium, design: .monospaced))
-                        .padding(.horizontal, 13)
-                        .frame(minHeight: 50)
-                        .background(Color.white.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                    Button {
-                        activatePro()
-                    } label: {
-                        Text(didActivatePlan ? "Pro Beta Active" : "Activate with License Key")
-                            .font(.system(size: 14, weight: .bold))
-                            .frame(maxWidth: .infinity)
-                            .frame(minHeight: 50)
-                    }
-                    .foregroundStyle(.white)
-                    .background(didActivatePlan ? MerLuyTheme.positive : MerLuyTheme.indigo)
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                    if let licenseMessage {
-                        Text(licenseMessage)
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(didActivatePlan ? MerLuyTheme.positive : MerLuyTheme.negative)
-                    }
-                }
-                .padding(14)
-                .glassCard(radius: 17)
-            }
-            Text("Beta mode is local only. Test keys: MERLUY-PRO-001 through MERLUY-PRO-010")
-                .font(.system(size: 11))
-                .foregroundStyle(MerLuyTheme.textSecondary)
-        }
-    }
-
-    private func activatePro() {
-        let normalizedKey = licenseKey.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        let testKeys = (1...10).map { String(format: "MERLUY-PRO-%03d", $0) } + ["MERLUY-PRO-BETA"]
-        guard testKeys.contains(normalizedKey) else {
-            didActivatePlan = false
-            licenseMessage = "That license key is not valid for this beta."
-            return
-        }
-        didActivatePlan = true
-        profile.isPro = true
-        licenseMessage = "Pro Beta activated on this device."
-    }
 }
 
 private struct MetricCard: View {
@@ -200,28 +130,6 @@ private struct UsageRow: View {
             HStack { Text(label).font(.system(size: 12)); Spacer(); Text(value).font(.system(size: 12, weight: .bold)) }
             ProgressView(value: progress).tint(MerLuyTheme.indigo)
         }
-    }
-}
-
-private struct PlanCard: View {
-    let name: String
-    let detail: String
-    let icon: String
-    let isSelected: Bool
-    let action: () -> Void
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: icon).frame(width: 36, height: 36).foregroundStyle(MerLuyTheme.indigo).background(MerLuyTheme.indigo.opacity(0.15)).clipShape(RoundedRectangle(cornerRadius: 10))
-                VStack(alignment: .leading, spacing: 4) { Text(name).font(.system(size: 14, weight: .bold)); Text(detail).font(.system(size: 11)).foregroundStyle(MerLuyTheme.textSecondary) }
-                Spacer()
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle").font(.system(size: 20)).foregroundStyle(isSelected ? MerLuyTheme.positive : MerLuyTheme.textSecondary)
-            }
-            .padding(14)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .glassCard(radius: 17)
     }
 }
 
