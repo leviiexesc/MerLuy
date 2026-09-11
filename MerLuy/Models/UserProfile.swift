@@ -60,6 +60,16 @@ final class UserProfile: ObservableObject {
         return true
     }
 
+    func loginUser(email: String, password: String) -> Bool {
+        let registeredEmail = UserDefaults.standard.string(forKey: "merluy.user.email") ?? ""
+        guard !email.isEmpty, password.count >= 6, email.caseInsensitiveCompare(registeredEmail) == .orderedSame else { return false }
+        self.email = email
+        self.name = UserDefaults.standard.string(forKey: "merluy.user.name") ?? email.split(separator: "@").first.map(String.init) ?? "MerLuy User"
+        self.role = .user
+        self.isLoggedIn = true
+        return true
+    }
+
     func logOut() {
         isLoggedIn = false
         role = .user

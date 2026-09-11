@@ -5,10 +5,10 @@ import UIKit
 struct ProfileView: View {
     @EnvironmentObject private var profile: UserProfile
     @EnvironmentObject private var language: LanguageManager
+    @EnvironmentObject private var licenseService: LicenseService
     @State private var showingAuth = false
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var licenseKey = ""
-    @State private var licenseMessage: String?
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -128,17 +128,30 @@ struct ProfileView: View {
                 .frame(minHeight: 48)
                 .background(Color.white.opacity(0.08))
                 .clipShape(RoundedRectangle(cornerRadius: 13))
-            Button("Activate Pro") { activatePro() }
+            Button {
+                Task {
+                    await licenseService.check(key: licenseKey)
+                    if licenseService.isValid {
+                        UserDefaults.standard.set(true, forKey: "merluy.proActivated")
+                        profile.isPro = true
+                    }
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    if licenseService.isChecking { ProgressView().tint(.white) }
+                    Text(licenseService.isChecking ? "Checking license..." : "Scan & Activate Pro")
+                }
+            }
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: 48)
                 .background(MerLuyTheme.indigo)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
-            if let licenseMessage {
-                Text(licenseMessage)
+            if let resultMessage = licenseService.resultMessage {
+                Text(resultMessage)
                     .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(profile.isPro ? MerLuyTheme.positive : MerLuyTheme.negative)
+                    .foregroundStyle(licenseService.isValid ? MerLuyTheme.positive : MerLuyTheme.negative)
             }
         }
         .padding(15)
@@ -179,6 +192,8 @@ struct ProfileAvatar: View {
 private struct ProfileAuthView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var profile: UserProfile
+    private enum Mode: String, CaseIterable { case login = "Login", register = "Register" }
+    @State private var mode: Mode = .login
     @State private var name = ""
     @State private var email = ""
     @State private var password = ""
@@ -186,39 +201,35 @@ private struct ProfileAuthView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack { AppBackground(); VStack(spacing: 14) {
-                Text("Login / Register").font(.system(size: 25, weight: .bold, design: .rounded))
-                TextField("Your name", text: $name).authStyle()
+            ZStack { AppBackground(); VStack(spacing: 16) {
+                MerLuyLogo(size: 72)
+                Text(mode == .login ? "Welcome back" : "Create your account").font(.system(size: 25, weight: .bold, design: .rounded))
+                Text(mode == .login ? "Login to continue to MerLuy" : "Register a new MerLuy account")
+                    .font(.system(size: 13)).foregroundStyle(MerLuyTheme.textSecondary)
+                Picker("Account action", selection: $mode) {
+                    ForEach(Mode.allCases, id: \.self) { option in Text(option.rawValue).tag(option) }
+                }
+                .pickerStyle(.segmented)
+                .frame(minHeight: 44)
+                if mode == .register { TextField("Your name", text: $name).authStyle() }
                 TextField("Email", text: $email).textInputAutocapitalization(.never).keyboardType(.emailAddress).authStyle()
                 SecureField("Password", text: $password).authStyle()
                 if let error { Text(error).font(.system(size: 12)).foregroundStyle(MerLuyTheme.negative) }
                 Button("Continue") {
                     guard email.contains("@"), password.count >= 6 else { error = "Enter a valid email and 6+ character password."; return }
-                    if email.caseInsensitiveCompare("admin@gmail.com") == .orderedSame {
+                    if mode == .register {
+                        guard !name.isEmpty else { error = "Enter your name to create an account."; return }
+                        profile.register(name: name, email: email)
+                    } else if email.caseInsensitiveCompare("admin@gmail.com") == .orderedSame {
                         guard profile.login(name: name, email: email, password: password) else { error = "Admin credentials are not valid."; return }
                     } else {
-                        guard !name.isEmpty else { error = "Enter your name to create a User account."; return }
-                        profile.register(name: name, email: email)
+                        guard profile.loginUser(email: email, password: password) else { error = "Enter a valid login email and password."; return }
                     }
                     dismiss()
                 }.font(.system(size: 15, weight: .bold)).foregroundStyle(.white).frame(maxWidth: .infinity).frame(minHeight: 50).background(MerLuyTheme.indigo).clipShape(RoundedRectangle(cornerRadius: 15))
             }.padding(20).glassCard(radius: 22).padding(18) }
             .toolbar { ToolbarItem(placement: .topBarLeading) { Button("Close") { dismiss() } } }
         }.preferredColorScheme(.dark)
-    }
-}
-
-private extension ProfileView {
-    func activatePro() {
-        let normalizedKey = licenseKey.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        let testKeys = (1...10).map { String(format: "MERLUY-PRO-%03d", $0) } + ["MERLUY-PRO-BETA"]
-        guard testKeys.contains(normalizedKey) else {
-            licenseMessage = "Contact the owner for a valid license key."
-            return
-        }
-        UserDefaults.standard.set(true, forKey: "merluy.proActivated")
-        profile.isPro = true
-        licenseMessage = "Pro activated on this device."
     }
 }
 

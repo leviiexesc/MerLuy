@@ -125,6 +125,22 @@ struct AppBackground: View {
     }
 }
 
+struct MerLuyLogo: View {
+    let size: CGFloat
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(LinearGradient(colors: [Color.cyan, MerLuyTheme.indigo], startPoint: .topLeading, endPoint: .bottomTrailing))
+            Image(systemName: "arrow.triangle.2.circlepath")
+                .font(.system(size: size * 0.38, weight: .bold))
+                .foregroundStyle(.white)
+        }
+        .frame(width: size, height: size)
+        .shadow(color: Color.cyan.opacity(0.35), radius: 12)
+    }
+}
+
 struct SectionLabel: View {
     let title: String
 
