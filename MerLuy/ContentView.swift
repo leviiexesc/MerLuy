@@ -18,7 +18,6 @@ struct ContentView: View {
                 }
             }
             .padding(.bottom, 92)
-            .safeAreaPadding(.bottom, 0)
 
             CustomTabBar(selectedTab: $selectedTab, adminAuthenticated: profile.isAdmin, isLoggedIn: profile.isLoggedIn)
                 .padding(.horizontal, 12)
