@@ -9,6 +9,7 @@ struct AdminView: View {
 
     @EnvironmentObject private var notifications: NotificationService
     @EnvironmentObject private var language: LanguageManager
+    @EnvironmentObject private var profile: UserProfile
     @AppStorage("merluy.adminAuthenticated") private var adminAuthenticated = true
     @State private var section: Section = .dashboard
     @State private var title = "MerLuy update"
@@ -173,6 +174,7 @@ struct AdminView: View {
             return
         }
         didActivatePlan = true
+        profile.isPro = true
         licenseMessage = "Pro Beta activated on this device."
     }
 }

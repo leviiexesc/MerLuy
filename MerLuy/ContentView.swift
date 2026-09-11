@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    enum Tab: Int { case home, exchange, settings, admin }
+    enum Tab: Int { case home, exchange, profile, settings, admin }
     @State private var selectedTab: Tab = .home
     @AppStorage("merluy.adminAuthenticated") private var adminAuthenticated = false
 
@@ -12,6 +12,7 @@ struct ContentView: View {
                 switch selectedTab {
                 case .home: HomeView()
                 case .exchange: ExchangeView()
+                case .profile: ProfileView()
                 case .settings: SettingsView()
                 case .admin: AdminView()
                 }
@@ -36,6 +37,7 @@ struct CustomTabBar: View {
         var items: [(ContentView.Tab, String, String)] = [
             (.home, "Home", "house.fill"),
             (.exchange, "Exchange", "arrow.triangle.2.circlepath"),
+            (.profile, "Profile", "person.crop.circle.fill"),
             (.settings, "Settings", "gearshape.fill")
         ]
         if adminAuthenticated { items.append((.admin, "Admin", "chart.bar.xaxis")) }

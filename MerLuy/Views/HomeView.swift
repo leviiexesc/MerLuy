@@ -4,11 +4,12 @@ struct HomeView: View {
     @EnvironmentObject private var currencyAPI: CurrencyAPIService
     @EnvironmentObject private var language: LanguageManager
     @EnvironmentObject private var notifications: NotificationService
+    @State private var showingNotifications = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
-                HomeHeader()
+                HomeHeader(showingNotifications: $showingNotifications, unreadCount: notifications.unreadCount)
                 if let statusMessage = notifications.statusMessage {
                     Label(statusMessage, systemImage: "bell.badge.fill")
                         .font(.system(size: 11, weight: .medium))
@@ -38,6 +39,9 @@ struct HomeView: View {
             .padding(.horizontal, 16)
             .padding(.top, 14)
         }
+        .sheet(isPresented: $showingNotifications) {
+            NotificationCenterView()
+        }
         .task {
             await currencyAPI.fetchRates()
         }
@@ -45,7 +49,8 @@ struct HomeView: View {
 }
 
 private struct HomeHeader: View {
-    @EnvironmentObject private var notifications: NotificationService
+    @Binding var showingNotifications: Bool
+    let unreadCount: Int
 
     var body: some View {
         HStack {
@@ -62,15 +67,26 @@ private struct HomeHeader: View {
             }
             Spacer()
             Button {
-                Task { await notifications.sendLocalNotification(title: "MerLuy", message: "Your exchange rates are up to date.") }
+                showingNotifications = true
             } label: {
-                Image(systemName: "bell.fill")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(.white)
-                    .frame(width: 48, height: 48)
-                    .background(Color.white.opacity(0.08))
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(Color.white.opacity(0.12)))
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: "bell.fill")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(.white)
+                        .frame(width: 48, height: 48)
+                        .background(Color.white.opacity(0.08))
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.white.opacity(0.12)))
+                    if unreadCount > 0 {
+                        Text(unreadCount > 9 ? "9+" : "\(unreadCount)")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(5)
+                            .background(MerLuyTheme.negative)
+                            .clipShape(Circle())
+                            .offset(x: 2, y: -2)
+                    }
+                }
             }
             .buttonStyle(.plain)
         }

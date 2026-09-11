@@ -1,11 +1,22 @@
 import Foundation
 import UserNotifications
 
+struct AppNotification: Identifiable {
+    let id = UUID()
+    let title: String
+    let message: String
+    let date = Date()
+}
+
 @MainActor
 final class NotificationService: ObservableObject {
     @Published private(set) var statusMessage: String?
+    @Published private(set) var notifications: [AppNotification] = []
+
+    var unreadCount: Int { notifications.count }
 
     func sendLocalNotification(title: String, message: String) async {
+        notifications.insert(AppNotification(title: title, message: message), at: 0)
         let center = UNUserNotificationCenter.current()
         let settings = await center.notificationSettings()
         if settings.authorizationStatus == .notDetermined {
@@ -39,5 +50,9 @@ final class NotificationService: ObservableObject {
         } catch {
             statusMessage = error.localizedDescription
         }
+    }
+
+    func clearNotifications() {
+        notifications.removeAll()
     }
 }
