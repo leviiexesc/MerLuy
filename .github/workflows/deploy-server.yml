@@ -1,0 +1,27 @@
+name: Deploy MerLuy Server
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'server/**'
+      - '.github/workflows/deploy-server.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install server dependencies
+        run: cd server && npm install
+
+      - name: Basic syntax check
+        run: cd server && node --check index.js
+
+      - name: Notify deployment target
+        run: echo "Connect this workflow to Render/Railway or your hosting platform using GitHub Actions secrets."

@@ -17,11 +17,12 @@ struct ContentView: View {
                 case .admin: AdminView()
                 }
             }
-            .padding(.bottom, 94)
+            .padding(.bottom, 92)
+            .safeAreaPadding(.bottom, 0)
 
             CustomTabBar(selectedTab: $selectedTab, adminAuthenticated: profile.isAdmin, isLoggedIn: profile.isLoggedIn)
                 .padding(.horizontal, 12)
-                .padding(.bottom, 12)
+                .padding(.bottom, 10)
         }
         .onChange(of: profile.isAdmin) { isAdmin in
             if !isAdmin, selectedTab == .admin { selectedTab = .profile }

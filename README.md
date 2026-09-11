@@ -32,3 +32,16 @@ To test Pro Beta without a server, open Admin > Beta Plans, select Pro Beta, and
 The Android version is in `android/` and uses Kotlin with Jetpack Compose. GitHub Actions builds a free debug APK using `.github/workflows/build-android.yml`.
 
 Open GitHub **Actions** > **Build Android APK** > **Run workflow**, then download the `MerLuy-debug-apk` artifact. Open the `android/` folder in Android Studio to run it on an emulator or Android phone.
+
+## Free Push Server on GitHub
+
+A lightweight notification server is included in the `server/` folder and is ready to host on a free provider such as Render, Railway, or Fly.io.
+
+- `server/index.js` accepts `/api/register` and `/api/notify`
+- `server/.env.example` includes Firebase and APNS settings
+- `render.yaml` configures a free Render deployment
+- `.github/workflows/deploy-server.yml` verifies the Node server on GitHub pushes
+
+The app can call the server URL using the Admin panel Server URL field. If the server is not configured, it falls back to local notification delivery.
+
+> Real iPhone push delivery still needs Apple Developer + APNS credentials. Android push via Firebase is free and works with a valid service account.

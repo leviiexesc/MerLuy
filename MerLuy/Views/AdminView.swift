@@ -14,6 +14,7 @@ struct AdminView: View {
     @State private var section: Section = .dashboard
     @State private var title = "MerLuy update"
     @State private var message = "Your exchange rates have been refreshed."
+    @State private var serverURLText = ""
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -36,6 +37,9 @@ struct AdminView: View {
             .padding(.horizontal, 16)
             .padding(.top, 14)
             .padding(.bottom, 20)
+        }
+        .onAppear {
+            serverURLText = notifications.serverURL
         }
     }
 
@@ -77,8 +81,25 @@ struct AdminView: View {
         VStack(alignment: .leading, spacing: 14) {
             AdminField(label: "Title", text: $title)
             AdminField(label: "Message", text: $message, axis: .vertical)
+            VStack(alignment: .leading, spacing: 7) {
+                Text("Server URL")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(MerLuyTheme.textSecondary)
+                TextField("https://your-free-server.example.com", text: $serverURLText)
+                    .font(.system(size: 13))
+                    .padding(13)
+                    .frame(minHeight: 48)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 13))
+                    .onChange(of: serverURLText) { newValue in
+                        notifications.setServerURL(newValue)
+                    }
+            }
             Button {
-                Task { await notifications.sendLocalNotification(title: title, message: message) }
+                Task {
+                    notifications.setServerURL(serverURLText)
+                    await notifications.sendRemoteNotification(title: title, message: message)
+                }
             } label: {
                 Label("Send Notification", systemImage: "paperplane.fill")
                     .font(.system(size: 14, weight: .bold))
@@ -94,7 +115,7 @@ struct AdminView: View {
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(MerLuyTheme.positive)
             }
-            Text("This sends a local notification to the current iPhone. Remote delivery needs APNs and a backend.")
+            Text("This sends the same alert to iPhone and Android when the free backend is connected. Sound plays in-app and outside the app.")
                 .font(.system(size: 11))
                 .foregroundStyle(MerLuyTheme.textSecondary)
         }
