@@ -158,7 +158,7 @@ struct AdminView: View {
                 .padding(14)
                 .glassCard(radius: 17)
             }
-            Text("Beta mode is a local UI test only. No payment is taken. Demo key: MERLUY-PRO-BETA")
+            Text("Beta mode is local only. Test keys: MERLUY-PRO-001 through MERLUY-PRO-010")
                 .font(.system(size: 11))
                 .foregroundStyle(MerLuyTheme.textSecondary)
         }
@@ -166,7 +166,8 @@ struct AdminView: View {
 
     private func activatePro() {
         let normalizedKey = licenseKey.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        guard normalizedKey == "MERLUY-PRO-BETA" else {
+        let testKeys = (1...10).map { String(format: "MERLUY-PRO-%03d", $0) } + ["MERLUY-PRO-BETA"]
+        guard testKeys.contains(normalizedKey) else {
             didActivatePlan = false
             licenseMessage = "That license key is not valid for this beta."
             return
