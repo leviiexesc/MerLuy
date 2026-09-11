@@ -18,11 +18,11 @@ struct ContentView: View {
                 case .admin: AdminView()
                 }
             }
-            .padding(.bottom, 74)
+            .padding(.bottom, 94)
 
             CustomTabBar(selectedTab: $selectedTab, adminAuthenticated: adminAuthenticated, isLoggedIn: profile.isLoggedIn)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 10)
+                .padding(.horizontal, 12)
+                .padding(.bottom, 12)
         }
     }
 }
@@ -44,31 +44,48 @@ struct CustomTabBar: View {
     }
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 2) {
             ForEach(tabs, id: \.0.rawValue) { tab in
                 Button {
-                    withAnimation(.easeOut(duration: 0.2)) { selectedTab = tab.0 }
+                    withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) { selectedTab = tab.0 }
                 } label: {
                     VStack(spacing: 5) {
                         Image(systemName: tab.2)
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.system(size: 16, weight: .semibold))
                         Text(tab.1)
-                            .font(.system(size: 9, weight: .medium))
+                            .font(.system(size: 9, weight: .semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                     }
                     .foregroundStyle(selectedTab == tab.0 ? MerLuyTheme.indigo : MerLuyTheme.textSecondary)
                     .frame(maxWidth: .infinity)
-                    .frame(minHeight: 56)
+                    .frame(minHeight: 60)
                     .contentShape(Rectangle())
-                    .background(selectedTab == tab.0 ? Color.white.opacity(0.10) : .clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .background {
+                        if selectedTab == tab.0 {
+                            Capsule()
+                                .fill(LinearGradient(colors: [Color.white.opacity(0.22), MerLuyTheme.indigo.opacity(0.25)], startPoint: .top, endPoint: .bottom))
+                                .overlay(Capsule().stroke(Color.white.opacity(0.16), lineWidth: 1))
+                        }
+                    }
+                    .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(tab.1)
+                .accessibilityAddTraits(selectedTab == tab.0 ? .isSelected : [])
             }
         }
-        .padding(6)
-        .background(.ultraThinMaterial.opacity(0.65))
-        .glassCard(radius: 27)
-        .animation(.easeInOut(duration: 0.22), value: selectedTab)
+        .padding(5)
+        .frame(maxWidth: 620)
+        .background {
+            Capsule()
+                .fill(.ultraThinMaterial)
+                .overlay(Capsule().fill(Color.white.opacity(0.04)))
+                .overlay(Capsule().stroke(Color.white.opacity(0.18), lineWidth: 1))
+                .shadow(color: Color.black.opacity(0.40), radius: 22, y: 10)
+        }
+        .contentShape(Capsule())
+        .animation(.spring(response: 0.28, dampingFraction: 0.82), value: selectedTab)
     }
 }
 
