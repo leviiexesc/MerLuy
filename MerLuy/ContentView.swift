@@ -14,7 +14,7 @@ struct ContentView: View {
                 case .settings: SettingsView()
                 }
             }
-            .safeAreaPadding(.bottom, 74)
+            .padding(.bottom, 74)
 
             CustomTabBar(selectedTab: $selectedTab)
                 .padding(.horizontal, 16)
