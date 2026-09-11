@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.weight
-import androidx.compose.foundation.layout.align
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -55,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -175,7 +175,7 @@ private fun ExchangeScreen() {
         Spacer(Modifier.height(12.dp)); Text("Exchange", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.ExtraBold); Text("Convert between world currencies", color = Muted, fontSize = 13.sp)
         Text("AMOUNT", color = Muted, fontSize = 11.sp, fontWeight = FontWeight.Bold)
         OutlinedTextField(amount, { amount = it }, Modifier.fillMaxWidth(), label = { Text("Amount") })
-        GlassCard { Text("From", color = Muted); Text("🇺🇸  USD · US Dollar", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold); Text("⇅", color = Cyan, fontSize = 28.sp, modifier = Modifier.align(Alignment.CenterHorizontally)); Text("To", color = Muted); Text("🇪🇺  EUR · Euro", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold) }
+        GlassCard { Text("From", color = Muted); Text("🇺🇸  USD · US Dollar", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold); Text("⇅", color = Cyan, fontSize = 28.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center); Text("To", color = Muted); Text("🇪🇺  EUR · Euro", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold) }
         Button({ result = "៛410,000.00" }, Modifier.fillMaxWidth().height(52.dp)) { Text("Convert Amount") }
         GlassCard { Text("RESULT", color = Color(0xFF4ADE80), fontSize = 11.sp); Text(result, color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.Bold); Text("Updated just now", color = Muted, fontSize = 11.sp) }
     }
@@ -185,7 +185,7 @@ private fun ExchangeScreen() {
 private fun AccountScreen(loggedIn: Boolean, pro: Boolean, onLogin: () -> Unit, onPro: () -> Unit) {
     ScreenColumn {
         Spacer(Modifier.height(12.dp)); Text(if (loggedIn) "Profile" else "Account", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.ExtraBold); Text("Your account, verification, and plan", color = Muted, fontSize = 13.sp)
-        GlassCard { Logo(64.dp); Text(if (loggedIn) "MerLuy User" else "Create your account", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally)); Text(if (loggedIn) "user@example.com" else "Login or register to continue", color = Muted, modifier = Modifier.align(Alignment.CenterHorizontally)); if (!loggedIn) Button(onLogin, Modifier.fillMaxWidth().height(50.dp)) { Text("Login / Register") } }
+        GlassCard { Logo(64.dp); Text(if (loggedIn) "MerLuy User" else "Create your account", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center); Text(if (loggedIn) "user@example.com" else "Login or register to continue", color = Muted, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center); if (!loggedIn) Button(onLogin, Modifier.fillMaxWidth().height(50.dp)) { Text("Login / Register") } }
         GlassCard { Text(if (pro) "Pro Plan · ACTIVE" else "Free Plan", color = if (pro) Color(0xFFFFE36E) else Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold); if (!pro) { OutlinedTextField("MERLUY-PRO-001", {}, Modifier.fillMaxWidth(), label = { Text("License key") }); Button(onPro, Modifier.fillMaxWidth().height(50.dp)) { Text("Scan & Activate Pro") } } }
     }
 }
