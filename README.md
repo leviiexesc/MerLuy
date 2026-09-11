@@ -26,3 +26,9 @@ This is an unsigned IPA for free CI builds. Installing on a physical iPhone requ
 Admin tools are demo-only local features: create an Admin account from Settings, then use the Admin tab for sample dashboard metrics, local notifications, and a no-payment Pro Beta plan preview. Production accounts, remote notifications, and real analytics require a secure backend.
 
 To test Pro Beta without a server, open Admin > Beta Plans, select Pro Beta, and enter any local test key from `MERLUY-PRO-001` through `MERLUY-PRO-010`. The legacy key `MERLUY-PRO-BETA` also remains available. Activation is stored locally on the device for testing only.
+
+## Android APK
+
+The Android version is in `android/` and uses Kotlin with Jetpack Compose. GitHub Actions builds a free debug APK using `.github/workflows/build-android.yml`.
+
+Open GitHub **Actions** > **Build Android APK** > **Run workflow**, then download the `MerLuy-debug-apk` artifact. Open the `android/` folder in Android Studio to run it on an emulator or Android phone.
