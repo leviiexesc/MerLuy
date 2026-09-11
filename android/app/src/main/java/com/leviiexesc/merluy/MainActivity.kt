@@ -8,7 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +19,8 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.weight
+import androidx.compose.foundation.layout.align
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -181,7 +185,7 @@ private fun ExchangeScreen() {
 private fun AccountScreen(loggedIn: Boolean, pro: Boolean, onLogin: () -> Unit, onPro: () -> Unit) {
     ScreenColumn {
         Spacer(Modifier.height(12.dp)); Text(if (loggedIn) "Profile" else "Account", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.ExtraBold); Text("Your account, verification, and plan", color = Muted, fontSize = 13.sp)
-        GlassCard { Logo(64); Text(if (loggedIn) "MerLuy User" else "Create your account", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally)); Text(if (loggedIn) "user@example.com" else "Login or register to continue", color = Muted, modifier = Modifier.align(Alignment.CenterHorizontally)); if (!loggedIn) Button(onLogin, Modifier.fillMaxWidth().height(50.dp)) { Text("Login / Register") } }
+        GlassCard { Logo(64.dp); Text(if (loggedIn) "MerLuy User" else "Create your account", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally)); Text(if (loggedIn) "user@example.com" else "Login or register to continue", color = Muted, modifier = Modifier.align(Alignment.CenterHorizontally)); if (!loggedIn) Button(onLogin, Modifier.fillMaxWidth().height(50.dp)) { Text("Login / Register") } }
         GlassCard { Text(if (pro) "Pro Plan · ACTIVE" else "Free Plan", color = if (pro) Color(0xFFFFE36E) else Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold); if (!pro) { OutlinedTextField("MERLUY-PRO-001", {}, Modifier.fillMaxWidth(), label = { Text("License key") }); Button(onPro, Modifier.fillMaxWidth().height(50.dp)) { Text("Scan & Activate Pro") } } }
     }
 }
@@ -195,7 +199,7 @@ private fun SettingsScreen() {
 @Composable
 private fun AdminScreen() { ScreenColumn { Spacer(Modifier.height(12.dp)); Text("Admin Dashboard", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.ExtraBold); Text("Private workspace", color = Muted); Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) { Stat("Users", "128"); Stat("Conversions", "642") }; Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) { Stat("Exchange opens", "96"); Stat("API", "Live") }; GlassCard { Text("Notifications", color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Bold); OutlinedTextField("MerLuy update", {}, Modifier.fillMaxWidth(), label = { Text("Title") }); Button({}, Modifier.fillMaxWidth().height(50.dp)) { Text("Send Notification") } } } }
 
-@Composable private fun Stat(label: String, value: String) { GlassCard(Modifier.weight(1f)) { Text(value, color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold); Text(label, color = Muted, fontSize = 11.sp) } }
+@Composable private fun RowScope.Stat(label: String, value: String) { GlassCard(Modifier.weight(1f)) { Text(value, color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold); Text(label, color = Muted, fontSize = 11.sp) } }
 @Composable private fun RateCard(rate: Rate) { GlassCard { Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Column { Text("${rate.flags}  ${rate.pair}", color = Color.White, fontWeight = FontWeight.Bold); Text(rate.value, color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold) }; Text(rate.change, color = if (rate.change.startsWith("+")) Color(0xFF4ADE80) else Color(0xFFF87171) } } }
-@Composable private fun GlassCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) { Card(modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = CardBlue.copy(alpha = .8f)), shape = RoundedCornerShape(18.dp)) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content) } }
+@Composable private fun GlassCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) { Card(modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = CardBlue.copy(alpha = .8f)), shape = RoundedCornerShape(18.dp)) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content) } }
 @Composable private fun Logo(size: androidx.compose.ui.unit.Dp = 34.dp) { Box(Modifier.size(size).background(Brush.linearGradient(listOf(Cyan, Blue)), CircleShape), contentAlignment = Alignment.Center) { Icon(Icons.Default.CurrencyExchange, "MerLuy", tint = Color.White, modifier = Modifier.size(size * .55f)) } }
