@@ -14,7 +14,9 @@ struct AdminView: View {
     @State private var title = "MerLuy update"
     @State private var message = "Your exchange rates have been refreshed."
     @State private var selectedPlan = "Pro Beta"
-    @State private var didActivatePlan = false
+    @AppStorage("merluy.proActivated") private var didActivatePlan = false
+    @State private var licenseKey = ""
+    @State private var licenseMessage: String?
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -123,21 +125,54 @@ struct AdminView: View {
             PlanCard(name: "Pro Beta", detail: "Unlimited conversions and priority rates", icon: "sparkles", isSelected: selectedPlan == "Pro Beta") {
                 selectedPlan = "Pro Beta"
             }
-            Button {
-                didActivatePlan = true
-            } label: {
-                Text(didActivatePlan ? "Pro Beta Active" : "Activate Pro Beta")
-                    .font(.system(size: 14, weight: .bold))
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 50)
+            if selectedPlan == "Pro Beta" {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Pro license key")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(MerLuyTheme.textSecondary)
+                    TextField("Enter license key", text: $licenseKey)
+                        .textInputAutocapitalization(.characters)
+                        .autocorrectionDisabled()
+                        .font(.system(size: 14, weight: .medium, design: .monospaced))
+                        .padding(.horizontal, 13)
+                        .frame(minHeight: 50)
+                        .background(Color.white.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    Button {
+                        activatePro()
+                    } label: {
+                        Text(didActivatePlan ? "Pro Beta Active" : "Activate with License Key")
+                            .font(.system(size: 14, weight: .bold))
+                            .frame(maxWidth: .infinity)
+                            .frame(minHeight: 50)
+                    }
+                    .foregroundStyle(.white)
+                    .background(didActivatePlan ? MerLuyTheme.positive : MerLuyTheme.indigo)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    if let licenseMessage {
+                        Text(licenseMessage)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(didActivatePlan ? MerLuyTheme.positive : MerLuyTheme.negative)
+                    }
+                }
+                .padding(14)
+                .glassCard(radius: 17)
             }
-            .foregroundStyle(.white)
-            .background(didActivatePlan ? MerLuyTheme.positive : MerLuyTheme.indigo)
-            .clipShape(RoundedRectangle(cornerRadius: 15))
-            Text("Beta mode is a local UI test only. No payment is taken.")
+            Text("Beta mode is a local UI test only. No payment is taken. Demo key: MERLUY-PRO-BETA")
                 .font(.system(size: 11))
                 .foregroundStyle(MerLuyTheme.textSecondary)
         }
+    }
+
+    private func activatePro() {
+        let normalizedKey = licenseKey.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard normalizedKey == "MERLUY-PRO-BETA" else {
+            didActivatePlan = false
+            licenseMessage = "That license key is not valid for this beta."
+            return
+        }
+        didActivatePlan = true
+        licenseMessage = "Pro Beta activated on this device."
     }
 }
 
