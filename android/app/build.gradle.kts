@@ -8,6 +8,11 @@ android {
     namespace = "com.leviiexesc.merluy"
     compileSdk = 35
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
     defaultConfig {
         applicationId = "com.leviiexesc.merluy"
         minSdk = 23
@@ -17,6 +22,10 @@ android {
     }
 
     buildFeatures { compose = true }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
