@@ -1,8 +1,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    enum Tab: Int { case home, exchange, settings }
+    enum Tab: Int { case home, exchange, settings, admin }
     @State private var selectedTab: Tab = .home
+    @AppStorage("merluy.adminMode") private var adminMode = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -12,11 +13,12 @@ struct ContentView: View {
                 case .home: HomeView()
                 case .exchange: ExchangeView()
                 case .settings: SettingsView()
+                case .admin: AdminView()
                 }
             }
             .padding(.bottom, 74)
 
-            CustomTabBar(selectedTab: $selectedTab)
+            CustomTabBar(selectedTab: $selectedTab, adminMode: adminMode)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 10)
         }
@@ -25,11 +27,17 @@ struct ContentView: View {
 
 struct CustomTabBar: View {
     @Binding var selectedTab: ContentView.Tab
-    private let tabs: [(ContentView.Tab, String, String)] = [
-        (.home, "Home", "house"),
-        (.exchange, "Exchange", "arrow.triangle.2.circlepath"),
-        (.settings, "Settings", "gearshape")
-    ]
+    let adminMode: Bool
+
+    private var tabs: [(ContentView.Tab, String, String)] {
+        var items: [(ContentView.Tab, String, String)] = [
+            (.home, "Home", "house.fill"),
+            (.exchange, "Exchange", "arrow.triangle.2.circlepath"),
+            (.settings, "Settings", "gearshape.fill")
+        ]
+        if adminMode { items.append((.admin, "Admin", "bell.badge.fill")) }
+        return items
+    }
 
     var body: some View {
         HStack(spacing: 8) {
@@ -45,16 +53,18 @@ struct CustomTabBar: View {
                     }
                     .foregroundStyle(selectedTab == tab.0 ? MerLuyTheme.indigo : MerLuyTheme.textSecondary)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 11)
+                    .frame(minHeight: 56)
+                    .contentShape(Rectangle())
                     .background(selectedTab == tab.0 ? Color.white.opacity(0.10) : .clear)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(5)
-        .background(.ultraThinMaterial.opacity(0.5))
-        .glassCard(radius: 25)
+        .padding(6)
+        .background(.ultraThinMaterial.opacity(0.65))
+        .glassCard(radius: 27)
+        .animation(.easeInOut(duration: 0.22), value: selectedTab)
     }
 }
 

@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: LanguageManager
+    @AppStorage("merluy.adminMode") private var adminMode = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -31,6 +32,9 @@ struct SettingsView: View {
                                 Image(systemName: "chevron.right").font(.system(size: 9, weight: .bold)).foregroundStyle(MerLuyTheme.textSecondary)
                             }
                         }
+                    }
+                    SettingsRow(icon: "person.badge.key", title: language.language.text("Admin Access")) {
+                        Toggle("", isOn: $adminMode).labelsHidden().tint(MerLuyTheme.indigo)
                     }
                 }
                 SettingsSection(title: language.language.text("About")) {

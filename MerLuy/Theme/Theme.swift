@@ -63,6 +63,12 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case "Quick Convert": return "ប្តូររហ័ស"
         case "You send": return "អ្នកផ្ញើ"
         case "You receive": return "អ្នកទទួល"
+        case "Admin Panel": return "ផ្ទាំងគ្រប់គ្រង"
+        case "Send a notification to this phone": return "ផ្ញើការជូនដំណឹងទៅទូរស័ព្ទនេះ"
+        case "Title": return "ចំណងជើង"
+        case "Message": return "សារ"
+        case "Send Notification": return "ផ្ញើការជូនដំណឹង"
+        case "Admin Access": return "សិទ្ធិអ្នកគ្រប់គ្រង"
         default: return english
         }
     }
